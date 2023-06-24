@@ -63,6 +63,7 @@ const smartphones = [
 
 // Use the second parameter { price: 0 } to remove the "price" field from the output data || Read
 // ecommerce >> db.products.find({ brand: "Google", price: 999 }, { price: 0 })
+// ecommerce >> db.products.find({ brand: "Google", price: 999 }).select({ price: 0 })
 
 // Show a limited number of data from the beginning || Read
 // ecommerce >> db.products.find({ releaseYear: 2022 }).limit(1) // Same as the findOne method

@@ -7,10 +7,41 @@ const Todo = new mongoose.model("Todo", todoSchema);
 const routerHandler = express.Router();
 
 // get all the todos
-routerHandler.get("/", async (req, res) => {});
+routerHandler.get("/", async (req, res) => {
+  try {
+    // const data = await Todo.find({ status: "active" }).select({
+    //   _id: 0,
+    //   __v: 0,
+    // });
+    const data = await Todo.find(
+      { status: "active" },
+      {
+        _id: 0,
+        status: 0,
+        __v: 0,
+      }
+    );
+    res.status(200).json({ res: data, message: "All data found sucessfully" });
+  } catch (error) {
+    res.status(500).json({
+      error: "There was a server side error!",
+    });
+  }
+});
 
 // get a single todo
-routerHandler.get("/:id", async (req, res) => {});
+routerHandler.get("/:id", async (req, res) => {
+  try {
+    const data = await Todo.find({ _id: req.params.id });
+    res
+      .status(200)
+      .json({ res: data, message: "Single data found sucessfully" });
+  } catch (error) {
+    res.status(500).json({
+      error: "There was a server side error!",
+    });
+  }
+});
 
 // post a todo
 routerHandler.post("/", async (req, res) => {
@@ -20,16 +51,14 @@ routerHandler.post("/", async (req, res) => {
   } catch (error) {
     res.status(500).send("Error saving todo");
   }
+  //   try {
+  //     const newTodo = new Todo(req.body);
+  //     await newTodo.save();
+  //     res.status(200).send("Todo saved");
+  //   } catch (error) {
+  //     res.status(500).send("Error saving todo");
+  //   }
 });
-// routerHandler.post("/", async (req, res) => {
-//   try {
-//     const newTodo = new Todo(req.body);
-//     await newTodo.save();
-//     res.status(200).send("Todo saved");
-//   } catch (error) {
-//     res.status(500).send("Error saving todo");
-//   }
-// });
 
 // post multiple todo
 routerHandler.post("/all", async (req, res) => {
@@ -90,6 +119,21 @@ routerHandler.put("/:id", async (req, res) => {
 });
 
 // delete todo
-routerHandler.delete("/:id", async (req, res) => {});
+routerHandler.delete("/", async (req, res) => {
+  try {
+    await Todo.deleteOne({ _id: req.params.id });
+
+    res.status(200).send("Todo deleted successfully");
+  } catch (error) {
+    res.status(500).send("Error deleting todo");
+  }
+  //   try {
+  //     await Todo.deleteMany({ status: "inactive" });
+
+  //     res.status(200).send("Todo deleted successfully");
+  //   } catch (error) {
+  //     res.status(500).send("Error deleting todo");
+  //   }
+});
 
 module.exports = routerHandler;

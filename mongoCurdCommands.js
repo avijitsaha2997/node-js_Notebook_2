@@ -50,7 +50,7 @@ const smartphones = [
 // Here our collection name is products
 
 // Single insert || Create
-// ecommerce >> db.products.insertOne({ name: "iPhone 10", price: 100000, category: "smartphone", active: true })
+// ecommerce >> db.products.create({ name: "iPhone 10", price: 100000, category: "smartphone", active: true })
 
 // Multiple insert || Create
 // ecommerce >> db.products.insertMany([{ brand: "Google", model: "Pixel 6", releaseYear: 2022, price: 699 }, { brand: "OnePlus", model: "9 Pro", releaseYear: 2021, price: 899 }])

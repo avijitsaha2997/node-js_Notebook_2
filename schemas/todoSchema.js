@@ -16,4 +16,25 @@ const todoSchema = mongoose.Schema({
   },
 });
 
+// instance methods
+todoSchema.methods = {
+  findActiveWithInstance: function () {
+    return mongoose.model("Todo").find({ status: "active" });
+  },
+};
+
+// static methods
+todoSchema.statics = {
+  findActiveWithStatic: function () {
+    return this.find({ status: "active" });
+  },
+};
+
+// query methods
+todoSchema.query = {
+  findWithQuery: function () {
+    return this.find({ title: "My 1st todo" });
+  },
+};
+
 module.exports = todoSchema;

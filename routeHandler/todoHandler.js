@@ -1,27 +1,71 @@
 const express = require("express");
 const todoSchema = require("../schemas/todoSchema.js");
 const mongoose = require("mongoose");
-
+const checkLogin = require("../middlewares/checkLogin.js");
 const Todo = new mongoose.model("Todo", todoSchema);
 
 const routerHandler = express.Router();
 
+routerHandler.use("/", checkLogin);
+
 // get all the todos
 routerHandler.get("/", async (req, res) => {
+  console.log(req.username);
+  console.log(req.userId);
   try {
-    // const data = await Todo.find({ status: "active" }).select({
-    //   _id: 0,
-    //   __v: 0,
-    // });
     const data = await Todo.find(
-      { status: "active" },
+      { status: "inactive" },
       {
         _id: 0,
         status: 0,
         __v: 0,
       }
     );
+
     res.status(200).json({ res: data, message: "All data found sucessfully" });
+  } catch (error) {
+    res.status(500).json({
+      error: "There was a server side error!",
+    });
+  }
+});
+
+// get all active the todos instance method
+routerHandler.get("/instanceactive", async (req, res) => {
+  try {
+    const findActiveTodos = new Todo();
+    const data = await findActiveTodos.findActiveWithInstance();
+    res
+      .status(200)
+      .json({ res: data, message: "All active data found sucessfully" });
+  } catch (error) {
+    res.status(500).json({
+      error: "There was a server side error!",
+    });
+  }
+});
+
+// get all active the todos with static method
+routerHandler.get("/staticactive", async (req, res) => {
+  try {
+    const data = await Todo.findActiveWithStatic();
+    res
+      .status(200)
+      .json({ res: data, message: "All active data found sucessfully" });
+  } catch (error) {
+    res.status(500).json({
+      error: "There was a server side error!",
+    });
+  }
+});
+
+// get all matched the todos with query method
+routerHandler.get("/querytitle", async (req, res) => {
+  try {
+    const data = await Todo.find().findWithQuery();
+    res
+      .status(200)
+      .json({ res: data, message: "All active data found sucessfully" });
   } catch (error) {
     res.status(500).json({
       error: "There was a server side error!",

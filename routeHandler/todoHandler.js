@@ -1,8 +1,10 @@
 const express = require("express");
 const todoSchema = require("../schemas/todoSchema.js");
+const userSchema = require("../schemas/userSchema.js");
 const mongoose = require("mongoose");
 const checkLogin = require("../middlewares/checkLogin.js");
 const Todo = new mongoose.model("Todo", todoSchema);
+const User = new mongoose.model("User", userSchema);
 
 const routerHandler = express.Router();
 
@@ -14,13 +16,13 @@ routerHandler.get("/", async (req, res) => {
   console.log(req.userId);
   try {
     const data = await Todo.find(
-      { status: "inactive" },
+      {},
       {
         _id: 0,
         status: 0,
         __v: 0,
       }
-    );
+    ).populate("user", " name status -_id");
 
     res.status(200).json({ res: data, message: "All data found sucessfully" });
   } catch (error) {
@@ -88,20 +90,44 @@ routerHandler.get("/:id", async (req, res) => {
 });
 
 // post a todo
-routerHandler.post("/", async (req, res) => {
+routerHandler.post("/", checkLogin, async (req, res) => {
   try {
-    await Todo.create(req.body);
+    const todo = await Todo.create({
+      ...req.body,
+      user: req.userId,
+    });
+    await User.updateOne(
+      {
+        _id: req.userId,
+      },
+      {
+        $push: {
+          todos: todo._id,
+        },
+      }
+    );
     res.status(200).send("Todo saved");
   } catch (error) {
     res.status(500).send("Error saving todo");
   }
-  //   try {
-  //     const newTodo = new Todo(req.body);
-  //     await newTodo.save();
-  //     res.status(200).send("Todo saved");
-  //   } catch (error) {
-  //     res.status(500).send("Error saving todo");
-  //   }
+  // try {
+  //   const newTodo = new Todo(req.body);
+  //   const todo = await newTodo.save();
+
+  //   await User.updateOne(
+  //     {
+  //       _id: req.userId,
+  //     },
+  //     {
+  //       $push: {
+  //         todos: todo._id,
+  //       },
+  //     }
+  //   );
+  //   res.status(200).send("Todo saved");
+  // } catch (error) {
+  //   res.status(500).send("Error saving todo");
+  // }
 });
 
 // post multiple todo

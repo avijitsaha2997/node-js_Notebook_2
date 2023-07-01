@@ -61,4 +61,14 @@ userHandler.post("/login", async (req, res) => {
   }
 });
 
+// find all user
+userHandler.get("/", async (req, res) => {
+  try {
+    const users = await User.find().populate("todos");
+    res.status(200).json({ data: users });
+  } catch (error) {
+    res.status(500).send("Error login");
+  }
+});
+
 module.exports = userHandler;
